@@ -1,0 +1,183 @@
+openapi: 3.0.3
+info:
+  title: Adventure Book API
+  version: 1.0.0
+  description: REST API for browsing and managing adventure books
+  contact:
+    name: Project Team
+    email: chemsklt@example.com
+
+externalDocs:
+  description: Adventure Book Wiki
+  url: https://wiki/adventure-book
+
+
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: Books
+    description: Book catalog operations
+
+paths:
+  /books:
+    get:
+      tags:
+        - Books
+      summary: List books with optional filters
+      description: Returns all books or filters them by title, author, category, or difficulty.
+      operationId: listBooks
+      parameters:
+        - name: title
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: author
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: difficulty
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/Difficulty'
+      responses:
+        '200':
+          description: Books retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookSummaryListResponse'
+
+  /books/{bookId}:
+    get:
+      tags:
+        - Books
+      summary: Get book details
+      description: Returns book details by id.
+      operationId: getBookById
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Book details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookDetailsResponse'
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Difficulty:
+      type: string
+      enum:
+        - EASY
+        - MEDIUM
+        - HARD
+
+    BookSummaryResponse:
+      type: object
+      required:
+        - id
+        - title
+        - author
+        - difficulty
+        - categories
+      properties:
+        id:
+          type: string
+          example: dragon-quest
+        title:
+          type: string
+          example: Dragon Quest
+        author:
+          type: string
+          example: John Doe
+        difficulty:
+          $ref: '#/components/schemas/Difficulty'
+        categories:
+          type: array
+          items:
+            type: string
+
+    BookSummaryListResponse:
+      type: object
+      required:
+        - content
+        - totalElements
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookSummaryResponse'
+        totalElements:
+          type: integer
+          format: int64
+          example: 4
+
+    BookDetailsResponse:
+      type: object
+      required:
+        - id
+        - title
+        - author
+        - difficulty
+        - categories
+        - sectionsCount
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        difficulty:
+          $ref: '#/components/schemas/Difficulty'
+        categories:
+          type: array
+          items:
+            type: string
+        sectionsCount:
+          type: integer
+          example: 12
+    ErrorResponse:
+      type: object
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Book with id 'unknown-book' was not found
+        path:
+          type: string
+          example: /books/unknown-book
