@@ -1,8 +1,9 @@
 package com.adventure.book.service;
 
-import com.adventure.book.domain.Book;
-import com.adventure.book.domain.Difficulty;
+import com.adventure.book.domain.*;
 import com.adventure.book.exception.BookNotFoundException;
+import com.adventure.book.exception.OptionNotFoundException;
+import com.adventure.book.exception.SectionNotFoundException;
 import com.adventure.book.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import java.util.Set;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+    private final BookValidationService bookValidationService;
+
 
     @Override
     public List<Book> searchBooks(String title, String author, String category, Difficulty difficulty) {
@@ -82,5 +85,60 @@ public class BookServiceImpl implements BookService {
             book.getCategories().removeIf(existing -> existing.equalsIgnoreCase(categoryName));
         }
         bookRepository.save(book);
+    }
+
+    @Override
+    public Section getStartSection(String bookId) {
+        Book book = getBookById(bookId);
+        bookValidationService.validate(book);
+
+        return book.getSections().stream()
+                .filter(section -> section.getType() == SectionType.BEGIN)
+                .findFirst()
+                .orElseThrow(() -> new SectionNotFoundException(bookId, "BEGIN"));
+    }
+
+    @Override
+    public Section getSection(String bookId, String sectionId) {
+        Book book = getBookById(bookId);
+        bookValidationService.validate(book);
+        return findSection(book, sectionId);
+    }
+
+    private Section findSection(Book book, String sectionId){
+        return book.getSections().stream()
+                .filter(section -> section.getId().equals(sectionId))
+                .findFirst()
+                .orElseThrow(() -> new SectionNotFoundException(book.getId(), sectionId));
+    }
+
+    @Override
+    public Section chooseOption(String bookId, String sectionId, String optionId) {
+        Book book = getBookById(bookId);
+        bookValidationService.validate(book);
+
+        Section currentSection = findSection(book, sectionId);
+
+        if (currentSection.getOptions() == null || currentSection.getOptions().isEmpty()) {
+            throw new OptionNotFoundException(bookId, sectionId, optionId);
+        }
+
+        Option selectedOption = findOption(currentSection, optionId, bookId);
+        return findSection(book, selectedOption.getGotoId());
+    }
+
+    private Option findOption(Section section, String optionId, String bookId) {
+        int index;
+        try {
+            index = Integer.parseInt(optionId);
+        } catch (NumberFormatException ex) {
+            throw new OptionNotFoundException(bookId, section.getId(), optionId);
+        }
+
+        if (index < 0 || index >= section.getOptions().size()) {
+            throw new OptionNotFoundException(bookId, section.getId(), optionId);
+        }
+
+        return section.getOptions().get(index);
     }
 }
