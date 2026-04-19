@@ -82,6 +82,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /books/{bookId}/categories:
+    post:
+      tags:
+        - Books
+      summary: Add a category to a book
+      description: Adds a category to the specified book.
+      operationId: addCategoryToBook
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+      responses:
+        '200':
+          description: Category added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookDetailsResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /books/{bookId}/categories/{categoryName}:
+    delete:
+      tags:
+        - Books
+      summary: Remove a category from a book
+      description: Removes a category from the specified book.
+      operationId: removeCategoryFromBook
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: categoryName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Category removed successfully
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -157,6 +223,16 @@ components:
         sectionsCount:
           type: integer
           example: 12
+    CategoryRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          example: Fantasy
+
     ErrorResponse:
       type: object
       required:

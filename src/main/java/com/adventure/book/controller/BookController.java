@@ -2,10 +2,7 @@ package com.adventure.book.controller;
 
 import com.adventure.book.domain.Book;
 import com.adventure.book.generated.api.BooksApi;
-import com.adventure.book.generated.model.BookDetailsResponse;
-import com.adventure.book.generated.model.BookSummaryListResponse;
-import com.adventure.book.generated.model.BookSummaryResponse;
-import com.adventure.book.generated.model.Difficulty;
+import com.adventure.book.generated.model.*;
 import com.adventure.book.mapper.BookMapper;
 import com.adventure.book.mapper.DifficultyMapper;
 import com.adventure.book.service.BookService;
@@ -24,6 +21,11 @@ public class BookController implements BooksApi {
     private final DifficultyMapper difficultyMapper;
 
     @Override
+    public ResponseEntity<BookDetailsResponse> addCategoryToBook(String bookId, CategoryRequest categoryRequest) {
+        return null;
+    }
+
+    @Override
     public ResponseEntity<BookDetailsResponse> getBookById(String bookId) {
         Book book = bookService.getBookById(bookId);
         return ResponseEntity.ok(bookMapper.toBookDetailsResponse(book));
@@ -39,5 +41,10 @@ public class BookController implements BooksApi {
                 .totalElements((long) content.size());
 
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<Void> removeCategoryFromBook(String bookId, String categoryName) {
+        return null;
     }
 }
