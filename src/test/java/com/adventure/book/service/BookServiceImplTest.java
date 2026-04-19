@@ -17,6 +17,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -121,5 +122,41 @@ public class BookServiceImplTest {
         assertThatThrownBy(() -> bookService.getBookById("missing"))
                 .isInstanceOf(BookNotFoundException.class)
                 .hasMessage("Book with id 'missing' was not found");
+    }
+
+    @Test
+    void shouldAddCategoryWhenNotAlreadyPresent() {
+        when(bookRepository.findById("the-prisoner")).thenReturn(Optional.of(prisonerBook));
+        when(bookRepository.save(prisonerBook)).thenReturn(prisonerBook);
+
+        Book result = bookService.addCategory("the-prisoner", "Escape");
+
+        assertThat(result.getCategories()).containsExactly("Escape");
+        verify(bookRepository).save(prisonerBook);
+    }
+
+    @Test
+    void shouldNotDuplicateCategoryIgnoringCase() {
+        prisonerBook.setCategories(new LinkedHashSet<>(Set.of("Escape")));
+
+        when(bookRepository.findById("the-prisoner")).thenReturn(Optional.of(prisonerBook));
+        when(bookRepository.save(prisonerBook)).thenReturn(prisonerBook);
+
+        Book result = bookService.addCategory("the-prisoner", "escape");
+
+        assertThat(result.getCategories()).containsExactly("Escape");
+    }
+
+    @Test
+    void shouldRemoveCategoryIgnoringCase() {
+        prisonerBook.setCategories(new LinkedHashSet<>(Set.of("Escape", "Prison")));
+
+        when(bookRepository.findById("the-prisoner")).thenReturn(Optional.of(prisonerBook));
+        when(bookRepository.save(prisonerBook)).thenReturn(prisonerBook);
+
+        bookService.removeCategory("the-prisoner", "escape");
+
+        assertThat(prisonerBook.getCategories()).containsExactly("Prison");
+        verify(bookRepository).save(prisonerBook);
     }
 }
