@@ -2,6 +2,7 @@ package com.adventure.book.service;
 
 import com.adventure.book.domain.Book;
 import com.adventure.book.domain.Difficulty;
+import com.adventure.book.exception.BookNotFoundException;
 import com.adventure.book.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public Book getBookById(String bookId) {
         return bookRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException(bookId));
+                .orElseThrow(() -> new BookNotFoundException(bookId));
     }
 
     private boolean matches(String fieldValue, String filter) {

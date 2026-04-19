@@ -1,6 +1,7 @@
 package com.adventure.book.service;
 
 import com.adventure.book.domain.*;
+import com.adventure.book.exception.BookNotFoundException;
 import com.adventure.book.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -110,5 +112,14 @@ public class BookServiceImplTest {
         Book result = bookService.getBookById("the-prisoner");
 
         assertThat(result.getId()).isEqualTo("the-prisoner");
+    }
+
+    @Test
+    void shouldThrowWhenBookNotFound() {
+        when(bookRepository.findById("missing")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> bookService.getBookById("missing"))
+                .isInstanceOf(BookNotFoundException.class)
+                .hasMessage("Book with id 'missing' was not found");
     }
 }

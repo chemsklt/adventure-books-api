@@ -2,6 +2,7 @@ package com.adventure.book.controller;
 
 import com.adventure.book.domain.Book;
 import com.adventure.book.domain.Difficulty;
+import com.adventure.book.exception.BookNotFoundException;
 import com.adventure.book.generated.model.BookDetailsResponse;
 import com.adventure.book.generated.model.BookSummaryResponse;
 import com.adventure.book.mapper.BookMapper;
@@ -127,5 +128,15 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.id").value("the-prisoner"))
                 .andExpect(jsonPath("$.title").value("The Prisoner"))
                 .andExpect(jsonPath("$.sectionsCount").value(6));
+    }
+
+    @Test
+    void shouldReturn404WhenBookNotFound() throws Exception {
+        when(bookService.getBookById("missing-book"))
+                .thenThrow(new BookNotFoundException("missing-book"));
+
+        mockMvc.perform(get("/books/missing-book"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Book with id 'missing-book' was not found"));
     }
 }
