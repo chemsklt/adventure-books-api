@@ -20,6 +20,8 @@ tags:
     description: Book catalog operations
   - name: Book Reading
     description: Book reading operations
+  - name: Games
+    description: Game session operations
 
 paths:
   /books:
@@ -225,6 +227,101 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SectionResponse'
+  /games:
+    post:
+      tags:
+        - Games
+      summary: Start a new game session
+      operationId: startGame
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartGameRequest'
+      responses:
+        '201':
+          description: Game session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameResponse'
+        '400':
+          description: Invalid book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}:
+    get:
+      tags:
+        - Games
+      summary: Get current game session state
+      operationId: getGame
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Game session state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameResponse'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/choices:
+    post:
+      tags:
+        - Games
+      summary: Choose an option in the current game session
+      operationId: chooseGameOption
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameChoiceRequest'
+      responses:
+        '200':
+          description: Game state updated after applying the selected option
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameResponse'
+        '400':
+          description: Invalid game action
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -348,6 +445,66 @@ components:
       properties:
         optionId:
           type: string
+    GameStatus:
+      type: string
+      enum:
+        - IN_PROGRESS
+        - DEAD
+        - FINISHED
+    ConsequenceType:
+      type: string
+      enum:
+        - LOSE_HEALTH
+        - GAIN_HEALTH
+    ConsequenceResponse:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ConsequenceType'
+        value:
+          type: integer
+        text:
+          type: string
+    StartGameRequest:
+      type: object
+      required:
+        - bookId
+      properties:
+        bookId:
+          type: string
+          example: the-prisoner
+    GameChoiceRequest:
+      type: object
+      required:
+        - optionId
+      properties:
+        optionId:
+          type: string
+          example: "0"
+    GameResponse:
+      type: object
+      required:
+        - gameId
+        - bookId
+        - health
+        - status
+        - currentSection
+      properties:
+        gameId:
+          type: string
+          example: game-123
+        bookId:
+          type: string
+          example: the-prisoner
+        health:
+          type: integer
+          example: 10
+        status:
+          $ref: '#/components/schemas/GameStatus'
+        appliedConsequence:
+          $ref: '#/components/schemas/ConsequenceResponse'
+        currentSection:
+          $ref: '#/components/schemas/SectionResponse'
 
     ErrorResponse:
       type: object
