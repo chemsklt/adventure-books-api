@@ -5,6 +5,7 @@ import com.adventure.book.domain.Section;
 import com.adventure.book.domain.SectionType;
 import com.adventure.book.generated.model.SectionResponse;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class BookReadingMapperTest {
 
-    private final BookReadingMapper mapper = new BookReadingMapper();
+    private final BookReadingMapper mapper = Mappers.getMapper(BookReadingMapper.class);
 
     @Test
     void shouldMapSectionToSectionResponse() {

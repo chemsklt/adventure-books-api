@@ -1,16 +1,11 @@
 package com.adventure.book.mapper;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
-@Component
-public class DifficultyMapper {
+@Mapper(componentModel = "spring")
+public interface DifficultyMapper {
 
-    public com.adventure.book.domain.Difficulty toDomain(
+    com.adventure.book.domain.Difficulty toDomain(
             com.adventure.book.generated.model.Difficulty difficulty
-    ) {
-        if (difficulty == null) {
-            return null;
-        }
-        return com.adventure.book.domain.Difficulty.valueOf(difficulty.name());
-    }
+    );
 }

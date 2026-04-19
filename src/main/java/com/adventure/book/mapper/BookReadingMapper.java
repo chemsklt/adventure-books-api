@@ -4,36 +4,42 @@ import com.adventure.book.domain.Option;
 import com.adventure.book.domain.Section;
 import com.adventure.book.generated.model.OptionResponse;
 import com.adventure.book.generated.model.SectionResponse;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-public class BookReadingMapper {
+@Mapper(componentModel = "spring")
+public interface BookReadingMapper {
 
-    public SectionResponse toSectionResponse(Section section) {
-        SectionResponse response = new SectionResponse()
-                .sectionId(section.getId())
-                .text(section.getText())
-                .type(SectionResponse.TypeEnum.valueOf(section.getType().name()));
+    @Mapping(target = "sectionId", source = "id")
+    @Mapping(target = "type", source = "type")
+    @Mapping(target = "options", expression = "java(mapOptions(section.getOptions()))")
+    SectionResponse toSectionResponse(Section section);
 
-        List<OptionResponse> options = new ArrayList<>();
+    default SectionResponse.TypeEnum map(com.adventure.book.domain.SectionType type) {
+        return type == null ? null : SectionResponse.TypeEnum.valueOf(type.name());
+    }
 
-        if (section.getOptions() != null) {
-            for (int i = 0; i < section.getOptions().size(); i++) {
-                Option option = section.getOptions().get(i);
+    default List<OptionResponse> mapOptions(List<Option> options) {
+        List<OptionResponse> responses = new ArrayList<>();
 
-                OptionResponse optionResponse = new OptionResponse()
-                        .id(String.valueOf(i))
-                        .text(option.getDescription())
-                        .nextSectionId(option.getGotoId());
-
-                options.add(optionResponse);
-            }
+        if (options == null) {
+            return responses;
         }
 
-        response.setOptions(options);
-        return response;
+        for (int i = 0; i < options.size(); i++) {
+            Option option = options.get(i);
+
+            OptionResponse response = new OptionResponse()
+                    .id(String.valueOf(i))
+                    .text(option.getDescription())
+                    .nextSectionId(option.getGotoId());
+
+            responses.add(response);
+        }
+
+        return responses;
     }
 }

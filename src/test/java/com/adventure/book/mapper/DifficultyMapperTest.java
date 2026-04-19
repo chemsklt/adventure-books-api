@@ -1,12 +1,13 @@
 package com.adventure.book.mapper;
 
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DifficultyMapperTest {
 
-    private final DifficultyMapper mapper = new DifficultyMapper();
+    private final DifficultyMapper mapper = Mappers.getMapper(DifficultyMapper.class);
 
     @Test
     void shouldReturnNullWhenDifficultyIsNull() {
