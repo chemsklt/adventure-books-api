@@ -22,7 +22,8 @@ public class BookController implements BooksApi {
 
     @Override
     public ResponseEntity<BookDetailsResponse> addCategoryToBook(String bookId, CategoryRequest categoryRequest) {
-        return null;
+        Book updatedBook = bookService.addCategory(bookId, categoryRequest.getName());
+        return ResponseEntity.ok(bookMapper.toBookDetailsResponse(updatedBook));
     }
 
     @Override
@@ -45,6 +46,7 @@ public class BookController implements BooksApi {
 
     @Override
     public ResponseEntity<Void> removeCategoryFromBook(String bookId, String categoryName) {
-        return null;
+        bookService.removeCategory(bookId, categoryName);
+        return ResponseEntity.noContent().build();
     }
 }

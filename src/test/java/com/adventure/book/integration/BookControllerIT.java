@@ -4,10 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,5 +44,26 @@ public class BookControllerIT {
         mockMvc.perform(get("/books/unknown-book"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Book with id 'unknown-book' was not found"));
+    }
+
+    @Test
+    void shouldAddAndRemoveCategory() throws Exception {
+        mockMvc.perform(post("/books/the-prisoner/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Escape"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.categories[0]").value("Escape"));
+
+        mockMvc.perform(delete("/books/the-prisoner/categories/Escape"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/books/the-prisoner"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.categories").isArray())
+                .andExpect(jsonPath("$.categories.length()").value(0));
     }
 }

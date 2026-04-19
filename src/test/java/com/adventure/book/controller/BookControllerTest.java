@@ -139,4 +139,68 @@ class BookControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Book with id 'missing-book' was not found"));
     }
+
+    @Test
+    void shouldAddCategoryToBook() throws Exception {
+        Book updatedBook = new Book(
+                "the-prisoner",
+                "The Prisoner",
+                "Daniel El Fuego",
+                Difficulty.HARD,
+                new LinkedHashSet<>(List.of("Escape")),
+                List.of()
+        );
+
+        BookDetailsResponse detailsResponse = new BookDetailsResponse()
+                .id("the-prisoner")
+                .title("The Prisoner")
+                .author("Daniel El Fuego")
+                .difficulty(com.adventure.book.generated.model.Difficulty.HARD)
+                .categories(List.of("Escape"))
+                .sectionsCount(6);
+
+        when(bookService.addCategory("the-prisoner", "Escape")).thenReturn(updatedBook);
+        when(bookMapper.toBookDetailsResponse(updatedBook)).thenReturn(detailsResponse);
+
+        mockMvc.perform(post("/books/the-prisoner/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Escape"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("the-prisoner"))
+                .andExpect(jsonPath("$.categories[0]").value("Escape"));
+    }
+
+    @Test
+    void shouldReturn400WhenCategoryRequestIsInvalid() throws Exception {
+        mockMvc.perform(post("/books/the-prisoner/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": ""
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldRemoveCategoryFromBook() throws Exception {
+        mockMvc.perform(delete("/books/the-prisoner/categories/Escape"))
+                .andExpect(status().isNoContent());
+
+        verify(bookService).removeCategory("the-prisoner", "Escape");
+    }
+
+    @Test
+    void shouldReturn404WhenRemovingCategoryFromUnknownBook() throws Exception {
+        org.mockito.Mockito.doThrow(new BookNotFoundException("missing-book"))
+                .when(bookService).removeCategory("missing-book", "Escape");
+
+        mockMvc.perform(delete("/books/missing-book/categories/Escape"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Book with id 'missing-book' was not found"));
+    }
 }
