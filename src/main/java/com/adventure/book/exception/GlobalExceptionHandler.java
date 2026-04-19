@@ -1,5 +1,6 @@
 package com.adventure.book.exception;
 
+import com.adventure.book.exception.game.GameNotFoundException;
 import com.adventure.book.generated.model.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,7 @@ import java.time.OffsetDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({BookNotFoundException.class, SectionNotFoundException.class, OptionNotFoundException.class})
+    @ExceptionHandler({BookNotFoundException.class, SectionNotFoundException.class, OptionNotFoundException.class, GameNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException  ex, HttpServletRequest request
     ) {
         ErrorResponse error = new ErrorResponse()
