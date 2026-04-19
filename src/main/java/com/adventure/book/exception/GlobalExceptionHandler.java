@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler(InvalidBookException.class)
+    @ExceptionHandler({InvalidBookException.class, IllegalStateException.class})
     public ResponseEntity<ErrorResponse> handleInvalidBook(RuntimeException  ex, HttpServletRequest request
     ) {
         ErrorResponse error = new ErrorResponse()
@@ -37,5 +37,20 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI());
 
         return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotSupported(
+            org.springframework.web.HttpRequestMethodNotSupportedException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = new ErrorResponse()
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.METHOD_NOT_ALLOWED.value())
+                .error(HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(error);
     }
 }
