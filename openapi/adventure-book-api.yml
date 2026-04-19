@@ -18,6 +18,8 @@ servers:
 tags:
   - name: Books
     description: Book catalog operations
+  - name: Book Reading
+    description: Book reading operations
 
 paths:
   /books:
@@ -148,6 +150,81 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /books/{bookId}/start:
+    get:
+      tags:
+        - Book Reading
+      summary: Start reading a book
+      operationId: startBook
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: First section
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SectionResponse'
+
+  /books/{bookId}/sections/{sectionId}:
+    get:
+      tags:
+        - Book Reading
+      summary: Get a section by id
+      operationId: getSection
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Section details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SectionResponse'
+
+  /books/{bookId}/sections/{sectionId}/choose:
+    post:
+      tags:
+        - Book Reading
+      summary: Choose an option and move to next section
+      operationId: chooseOption
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: sectionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChooseOptionRequest'
+      responses:
+        '200':
+          description: Next section
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SectionResponse'
 
 components:
   schemas:
@@ -232,6 +309,45 @@ components:
           type: string
           minLength: 1
           example: Fantasy
+    SectionResponse:
+      type: object
+      required:
+        - sectionId
+        - text
+        - type
+      properties:
+        sectionId:
+          type: string
+          example: "1"
+        text:
+          type: string
+        type:
+          type: string
+          enum: [ BEGIN, NODE, END ]
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionResponse'
+    OptionResponse:
+      type: object
+      required:
+        - id
+        - text
+        - nextSectionId
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        nextSectionId:
+          type: string
+    ChooseOptionRequest:
+      type: object
+      required:
+        - optionId
+      properties:
+        optionId:
+          type: string
 
     ErrorResponse:
       type: object
