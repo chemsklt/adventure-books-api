@@ -59,6 +59,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BookSummaryListResponse'
+    post:
+      tags:
+        - Books
+      summary: Add a new book to the collection
+      description: Creates a new adventure book with its full structure.
+      operationId: createBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookRequest'
+      responses:
+        '201':
+          description: Book created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookDetailsResponse'
+        '400':
+          description: Invalid book payload or invalid book structure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Book with the same id already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /books/{bookId}:
     get:
@@ -569,6 +600,94 @@ components:
           $ref: '#/components/schemas/ConsequenceResponse'
         currentSection:
           $ref: '#/components/schemas/SectionResponse'
+
+    CreateConsequenceRequest:
+      type: object
+      required:
+        - type
+        - value
+        - text
+      properties:
+        type:
+          $ref: '#/components/schemas/ConsequenceType'
+        value:
+          type: integer
+          example: 3
+        text:
+          type: string
+          example: You cut yourself on a rusty nail.
+
+    CreateOptionRequest:
+      type: object
+      required:
+        - description
+        - gotoId
+      properties:
+        description:
+          type: string
+          example: Open the door
+        gotoId:
+          type: string
+          example: "1000"
+        consequence:
+          $ref: '#/components/schemas/CreateConsequenceRequest'
+
+    CreateSectionRequest:
+      type: object
+      required:
+        - id
+        - text
+        - type
+      properties:
+        id:
+          type: string
+          example: "1"
+        text:
+          type: string
+          example: You wake up in a dark prison cell.
+        type:
+          type: string
+          enum:
+            - BEGIN
+            - NODE
+            - END
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateOptionRequest'
+
+    CreateBookRequest:
+      type: object
+      required:
+        - id
+        - title
+        - author
+        - difficulty
+        - categories
+        - sections
+      properties:
+        id:
+          type: string
+          example: the-prisoner
+        title:
+          type: string
+          example: The Prisoner
+        author:
+          type: string
+          example: Daniel El Fuego
+        difficulty:
+          $ref: '#/components/schemas/Difficulty'
+        categories:
+          type: array
+          items:
+            type: string
+          example:
+            - Horror
+            - Mystery
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateSectionRequest'
 
     ErrorResponse:
       type: object

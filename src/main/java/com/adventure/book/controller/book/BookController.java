@@ -27,6 +27,11 @@ public class BookController implements BooksApi {
     }
 
     @Override
+    public ResponseEntity<BookDetailsResponse> createBook(CreateBookRequest createBookRequest) {
+        return null;
+    }
+
+    @Override
     public ResponseEntity<BookDetailsResponse> getBookById(String bookId) {
         Book book = bookService.getBookById(bookId);
         return ResponseEntity.ok(bookMapper.toBookDetailsResponse(book));
