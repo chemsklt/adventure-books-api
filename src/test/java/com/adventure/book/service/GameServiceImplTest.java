@@ -257,4 +257,63 @@ class GameServiceImplTest {
                 )
         );
     }
+
+    @Test
+    void shouldPauseGameWhenInProgress() {
+        GameSession session = new GameSession("game-1", "the-prisoner", "1", 10, GameStatus.IN_PROGRESS);
+        Section currentSection = createPrisonerBook().getSections().get(0);
+
+        when(gameSessionRepository.findById("game-1")).thenReturn(Optional.of(session));
+        when(bookService.getSection("the-prisoner", "1")).thenReturn(currentSection);
+        when(gameSessionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        GameMoveResult result = gameService.pauseGame("game-1");
+
+        assertThat(result.getGameSession().getStatus()).isEqualTo(GameStatus.PAUSED);
+    }
+
+    @Test
+    void shouldRejectPauseWhenAlreadyPaused() {
+        GameSession session = new GameSession("game-1", "the-prisoner", "1", 10, GameStatus.PAUSED);
+
+        when(gameSessionRepository.findById("game-1")).thenReturn(Optional.of(session));
+
+        assertThatThrownBy(() -> gameService.pauseGame("game-1"))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void shouldResumePausedGame() {
+        GameSession session = new GameSession("game-1", "the-prisoner", "1", 10, GameStatus.PAUSED);
+        Section currentSection = createPrisonerBook().getSections().get(0);
+
+        when(gameSessionRepository.findById("game-1")).thenReturn(Optional.of(session));
+        when(bookService.getSection("the-prisoner", "1")).thenReturn(currentSection);
+        when(gameSessionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        GameMoveResult result = gameService.resumeGame("game-1");
+
+        assertThat(result.getGameSession().getStatus()).isEqualTo(GameStatus.IN_PROGRESS);
+    }
+
+    @Test
+    void shouldRejectResumeWhenNotPaused() {
+        GameSession session = new GameSession("game-1", "the-prisoner", "1", 10, GameStatus.IN_PROGRESS);
+
+        when(gameSessionRepository.findById("game-1")).thenReturn(Optional.of(session));
+
+        assertThatThrownBy(() -> gameService.resumeGame("game-1"))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void shouldRejectChoiceWhenGameIsPaused() {
+        GameSession session = new GameSession("game-1", "the-prisoner", "1", 10, GameStatus.PAUSED);
+
+        when(gameSessionRepository.findById("game-1")).thenReturn(Optional.of(session));
+
+        assertThatThrownBy(() -> gameService.chooseOption("game-1", "0"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("not in progress");
+    }
 }

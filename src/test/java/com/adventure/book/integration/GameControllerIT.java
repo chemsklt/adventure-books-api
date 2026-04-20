@@ -186,4 +186,45 @@ class GameControllerIT {
                             """))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void shouldPauseAndResumeGameFlow() throws Exception {
+        MvcResult startResult = mockMvc.perform(post("/games")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "bookId": "the-prisoner"
+                            }
+                            """))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String gameId = JsonPath.read(startResult.getResponse().getContentAsString(), "$.gameId");
+
+        mockMvc.perform(post("/games/{gameId}/pause", gameId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("PAUSED"));
+
+        mockMvc.perform(post("/games/{gameId}/choices", gameId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "optionId": "0"
+                            }
+                            """))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(post("/games/{gameId}/resume", gameId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+
+        mockMvc.perform(post("/games/{gameId}/choices", gameId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "optionId": "0"
+                            }
+                            """))
+                .andExpect(status().isOk());
+    }
 }
