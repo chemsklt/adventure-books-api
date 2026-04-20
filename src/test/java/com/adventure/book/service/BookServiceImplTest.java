@@ -1,9 +1,12 @@
 package com.adventure.book.service;
 
 import com.adventure.book.domain.book.*;
+import com.adventure.book.exception.book.BookAlreadyExistsException;
 import com.adventure.book.exception.book.BookNotFoundException;
+import com.adventure.book.exception.book.InvalidBookException;
 import com.adventure.book.repository.book.BookRepository;
 import com.adventure.book.service.book.BookServiceImpl;
+import com.adventure.book.service.book.BookValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,8 +21,8 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class BookServiceImplTest {
@@ -29,6 +32,9 @@ public class BookServiceImplTest {
 
     @InjectMocks
     private BookServiceImpl bookService;
+
+    @Mock
+    private BookValidationService bookValidationService;
 
     private Book prisonerBook;
 
@@ -159,5 +165,74 @@ public class BookServiceImplTest {
 
         assertThat(prisonerBook.getCategories()).containsExactly("Prison");
         verify(bookRepository).save(prisonerBook);
+    }
+
+    @Test
+    void shouldCreateBook() {
+        Book book = new Book(
+                "new-book",
+                "New Book",
+                "Chems Keltoum",
+                Difficulty.EASY,
+                new java.util.LinkedHashSet<>(java.util.List.of(" Fantasy ", "Fantasy", "Mystery")),
+                java.util.List.of(
+                        new Section("1", "Start", SectionType.BEGIN, java.util.List.of(
+                                new Option("Go", "2", null)
+                        )),
+                        new Section("2", "End", SectionType.END, null)
+                )
+        );
+
+        when(bookRepository.existsById("new-book")).thenReturn(false);
+        when(bookRepository.save(any(Book.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Book created = bookService.createBook(book);
+
+        assertThat(created.getId()).isEqualTo("new-book");
+        assertThat(created.getCategories()).containsExactly("Fantasy", "Mystery");
+        verify(bookValidationService).validate(book);
+        verify(bookRepository).save(book);
+    }
+
+    @Test
+    void shouldThrowWhenCreatingDuplicateBook() {
+        Book book = new Book(
+                "existing-book",
+                "Existing Book",
+                "Chems Keltoum",
+                Difficulty.EASY,
+                new java.util.LinkedHashSet<>(),
+                java.util.List.of()
+        );
+
+        when(bookRepository.existsById("existing-book")).thenReturn(true);
+
+        assertThatThrownBy(() -> bookService.createBook(book))
+                .isInstanceOf(BookAlreadyExistsException.class)
+                .hasMessage("Book with id existing-book already exist");
+
+        verify(bookRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldValidateBookBeforeSaving() {
+        Book book = new Book(
+                "broken-book",
+                "Broken Book",
+                "Chems Keltoum",
+                Difficulty.EASY,
+                new java.util.LinkedHashSet<>(),
+                java.util.List.of()
+        );
+
+        when(bookRepository.existsById("broken-book")).thenReturn(false);
+        doThrow(new InvalidBookException("Book 'broken-book' has no sections"))
+                .when(bookValidationService).validate(book);
+
+        assertThatThrownBy(() -> bookService.createBook(book))
+                .isInstanceOf(InvalidBookException.class)
+                .hasMessage("Book 'broken-book' has no sections");
+
+        verify(bookRepository, never()).save(any());
     }
 }

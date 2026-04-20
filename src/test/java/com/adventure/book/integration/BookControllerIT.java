@@ -66,4 +66,94 @@ public class BookControllerIT {
                 .andExpect(jsonPath("$.categories").isArray())
                 .andExpect(jsonPath("$.categories.length()").value(0));
     }
+
+    @Test
+    void shouldCreateAndRetrieveBook() throws Exception {
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "id": "new-book",
+                                  "title": "New Book",
+                                  "author": "Chems Keltoum",
+                                  "difficulty": "EASY",
+                                  "categories": ["Fantasy", "Mystery"],
+                                  "sections": [
+                                    {
+                                      "id": "1",
+                                      "text": "Start",
+                                      "type": "BEGIN",
+                                      "options": [
+                                        {
+                                          "description": "Go to the end",
+                                          "gotoId": "2"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "id": "2",
+                                      "text": "The End",
+                                      "type": "END"
+                                    }
+                                  ]
+                                }
+                                """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value("new-book"))
+                .andExpect(jsonPath("$.title").value("New Book"))
+                .andExpect(jsonPath("$.sectionsCount").value(2));
+
+        mockMvc.perform(get("/books/new-book"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("new-book"))
+                .andExpect(jsonPath("$.title").value("New Book"))
+                .andExpect(jsonPath("$.author").value("Chems Keltoum"))
+                .andExpect(jsonPath("$.difficulty").value("EASY"));
+
+        mockMvc.perform(get("/books"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[?(@.id=='new-book')].title").value(org.hamcrest.Matchers.hasItem("New Book")));
+    }
+
+    @Test
+    void shouldReturnConflictWhenCreatingDuplicateBook() throws Exception {
+        String payload = """
+                {
+                  "id": "duplicate-book",
+                  "title": "Duplicate Book",
+                  "author": "Chems Keltoum",
+                  "difficulty": "EASY",
+                  "categories": [],
+                  "sections": [
+                    {
+                      "id": "1",
+                      "text": "Start",
+                      "type": "BEGIN",
+                      "options": [
+                        {
+                          "description": "Finish",
+                          "gotoId": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "2",
+                      "text": "End",
+                      "type": "END"
+                    }
+                  ]
+                }
+                """;
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Book with id duplicate-book already exist"));
+    }
 }

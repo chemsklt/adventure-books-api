@@ -3,10 +3,12 @@ package com.adventure.book.controller.book;
 import com.adventure.book.domain.book.Book;
 import com.adventure.book.generated.api.BooksApi;
 import com.adventure.book.generated.model.*;
+import com.adventure.book.mapper.book.BookCreationMapper;
 import com.adventure.book.mapper.book.BookMapper;
 import com.adventure.book.mapper.book.DifficultyMapper;
 import com.adventure.book.service.book.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +21,7 @@ public class BookController implements BooksApi {
     private final BookService bookService;
     private final BookMapper bookMapper;
     private final DifficultyMapper difficultyMapper;
+    private final BookCreationMapper bookCreationMapper;
 
     @Override
     public ResponseEntity<BookDetailsResponse> addCategoryToBook(String bookId, CategoryRequest categoryRequest) {
@@ -28,7 +31,10 @@ public class BookController implements BooksApi {
 
     @Override
     public ResponseEntity<BookDetailsResponse> createBook(CreateBookRequest createBookRequest) {
-        return null;
+        Book book = bookCreationMapper.toBook(createBookRequest);
+        Book createdBook = bookService.createBook(book);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(bookMapper.toBookDetailsResponse(createdBook));
     }
 
     @Override

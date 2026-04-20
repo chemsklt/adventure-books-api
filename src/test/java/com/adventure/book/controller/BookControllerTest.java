@@ -3,9 +3,13 @@ package com.adventure.book.controller;
 import com.adventure.book.controller.book.BookController;
 import com.adventure.book.domain.book.Book;
 import com.adventure.book.domain.book.Difficulty;
+import com.adventure.book.exception.book.BookAlreadyExistsException;
 import com.adventure.book.exception.book.BookNotFoundException;
+import com.adventure.book.exception.book.InvalidBookException;
 import com.adventure.book.generated.model.BookDetailsResponse;
 import com.adventure.book.generated.model.BookSummaryResponse;
+import com.adventure.book.generated.model.CreateBookRequest;
+import com.adventure.book.mapper.book.BookCreationMapper;
 import com.adventure.book.mapper.book.BookMapper;
 import com.adventure.book.mapper.book.DifficultyMapper;
 import com.adventure.book.service.book.BookService;
@@ -19,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,6 +47,9 @@ class BookControllerTest {
 
     @MockitoBean
     private DifficultyMapper difficultyMapper;
+
+    @MockitoBean
+    private BookCreationMapper bookCreationMapper;
 
     @Test
     void shouldListBooks() throws Exception {
@@ -201,5 +209,109 @@ class BookControllerTest {
         mockMvc.perform(delete("/books/missing-book/categories/Escape"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Book with id 'missing-book' was not found"));
+    }
+
+    @Test
+    void shouldCreateBook() throws Exception {
+        Book domainBook = new Book(
+                "new-book",
+                "New Book",
+                "Chems Keltoum",
+                com.adventure.book.domain.book.Difficulty.EASY,
+                new java.util.LinkedHashSet<>(java.util.List.of("Fantasy")),
+                java.util.List.of()
+        );
+
+        BookDetailsResponse response = new BookDetailsResponse()
+                .id("new-book")
+                .title("New Book")
+                .author("Chems Keltoum")
+                .difficulty(com.adventure.book.generated.model.Difficulty.EASY)
+                .categories(java.util.List.of("Fantasy"))
+                .sectionsCount(0);
+
+        when(bookCreationMapper.toBook(any(CreateBookRequest.class))).thenReturn(domainBook);
+        when(bookService.createBook(domainBook)).thenReturn(domainBook);
+        when(bookMapper.toBookDetailsResponse(domainBook)).thenReturn(response);
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "id": "new-book",
+                              "title": "New Book",
+                              "author": "Chems Keltoum",
+                              "difficulty": "EASY",
+                              "categories": ["Fantasy"],
+                              "sections": []
+                            }
+                            """))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value("new-book"))
+                .andExpect(jsonPath("$.title").value("New Book"))
+                .andExpect(jsonPath("$.author").value("Chems Keltoum"))
+                .andExpect(jsonPath("$.difficulty").value("EASY"))
+                .andExpect(jsonPath("$.sectionsCount").value(0));
+    }
+
+    @Test
+    void shouldReturnConflictWhenBookAlreadyExists() throws Exception {
+        Book domainBook = new Book(
+                "existing-book",
+                "Existing Book",
+                "Chems Keltoum",
+                com.adventure.book.domain.book.Difficulty.EASY,
+                new java.util.LinkedHashSet<>(),
+                java.util.List.of()
+        );
+
+        when(bookCreationMapper.toBook(any(CreateBookRequest.class))).thenReturn(domainBook);
+        when(bookService.createBook(domainBook)).thenThrow(new BookAlreadyExistsException("existing-book"));
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "id": "existing-book",
+                              "title": "Existing Book",
+                              "author": "Chems Keltoum",
+                              "difficulty": "EASY",
+                              "categories": [],
+                              "sections": []
+                            }
+                            """))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Book with id existing-book already exist"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenBookStructureIsInvalid() throws Exception {
+        Book invalidBook = new Book(
+                "broken-book",
+                "Broken Book",
+                "John Doe",
+                com.adventure.book.domain.book.Difficulty.EASY,
+                new java.util.LinkedHashSet<>(),
+                java.util.List.of()
+        );
+
+        when(bookCreationMapper.toBook(any(CreateBookRequest.class))).thenReturn(invalidBook);
+        when(bookService.createBook(invalidBook))
+                .thenThrow(new InvalidBookException("Book 'broken-book' has no sections"));
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                              "id": "broken-book",
+                              "title": "Broken Book",
+                              "author": "Chems Keltoum",
+                              "difficulty": "EASY",
+                              "categories": [],
+                              "sections": []
+                            }
+                            """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Book 'broken-book' has no sections"));
     }
 }
