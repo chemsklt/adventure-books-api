@@ -31,6 +31,16 @@ public class GameController implements GamesApi {
     }
 
     @Override
+    public ResponseEntity<GameResponse> pauseGame(String gameId) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<GameResponse> resumeGame(String gameId) {
+        return null;
+    }
+
+    @Override
     public ResponseEntity<GameResponse> chooseGameOption(String gameId, GameChoiceRequest gameChoiceRequest) {
         GameMoveResult result = gameService.chooseOption(gameId, gameChoiceRequest.getOptionId());
         return ResponseEntity.ok(gameMapper.toGameResponse(result));

@@ -322,6 +322,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /games/{gameId}/pause:
+    post:
+      tags:
+        - Games
+      summary: Pause a game session
+      operationId: pauseGame
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Game session paused
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameResponse'
+        '400':
+          description: Invalid game state transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /games/{gameId}/resume:
+    post:
+      tags:
+        - Games
+      summary: Resume a paused game session
+      operationId: resumeGame
+      parameters:
+        - name: gameId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Game session resumed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameResponse'
+        '400':
+          description: Invalid game state transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Game not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -449,6 +512,7 @@ components:
       type: string
       enum:
         - IN_PROGRESS
+        - PAUSED
         - DEAD
         - FINISHED
     ConsequenceType:
