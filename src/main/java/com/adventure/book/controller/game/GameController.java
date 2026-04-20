@@ -32,12 +32,14 @@ public class GameController implements GamesApi {
 
     @Override
     public ResponseEntity<GameResponse> pauseGame(String gameId) {
-        return null;
+        GameMoveResult result = gameService.pauseGame(gameId);
+        return ResponseEntity.ok(gameMapper.toGameResponse(result));
     }
 
     @Override
     public ResponseEntity<GameResponse> resumeGame(String gameId) {
-        return null;
+        GameMoveResult result = gameService.resumeGame(gameId);
+        return ResponseEntity.ok(gameMapper.toGameResponse(result));
     }
 
     @Override
