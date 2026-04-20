@@ -120,4 +120,39 @@ public class GameServiceImpl implements GameService {
         }
         return GameStatus.IN_PROGRESS;
     }
+
+    @Override
+    public GameMoveResult pauseGame(String gameId) {
+        GameSession session = getSession(gameId);
+
+        if (session.getStatus() != GameStatus.IN_PROGRESS) {
+            throw new IllegalStateException(
+                    "Game '%s' cannot be paused because it is in status '%s'"
+                            .formatted(gameId, session.getStatus())
+            );
+        }
+
+        session.setStatus(GameStatus.PAUSED);
+        gameSessionRepository.save(session);
+
+        Section currentSection = bookService.getSection(session.getBookId(), session.getCurrentSectionId());
+        return new GameMoveResult(session, null, currentSection);
+    }
+
+    public GameMoveResult resumeGame(String gameId) {
+        GameSession session = getSession(gameId);
+
+        if (session.getStatus() != GameStatus.PAUSED) {
+            throw new IllegalStateException(
+                    "Game '%s' cannot be resumed because it is in status '%s'"
+                            .formatted(gameId, session.getStatus())
+            );
+        }
+
+        session.setStatus(GameStatus.IN_PROGRESS);
+        gameSessionRepository.save(session);
+
+        Section currentSection = bookService.getSection(session.getBookId(), session.getCurrentSectionId());
+        return new GameMoveResult(session, null, currentSection);
+    }
 }
