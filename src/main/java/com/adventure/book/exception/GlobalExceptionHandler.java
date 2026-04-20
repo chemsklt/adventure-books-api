@@ -1,9 +1,6 @@
 package com.adventure.book.exception;
 
-import com.adventure.book.exception.book.BookNotFoundException;
-import com.adventure.book.exception.book.InvalidBookException;
-import com.adventure.book.exception.book.OptionNotFoundException;
-import com.adventure.book.exception.book.SectionNotFoundException;
+import com.adventure.book.exception.book.*;
 import com.adventure.book.exception.game.GameNotFoundException;
 import com.adventure.book.generated.model.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +25,19 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(BookAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleBookAlreadyExists(BookAlreadyExistsException ex, HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse()
+                .timestamp(OffsetDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .error(HttpStatus.CONFLICT.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler({InvalidBookException.class, IllegalStateException.class})

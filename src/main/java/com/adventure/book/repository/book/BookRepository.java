@@ -9,4 +9,6 @@ public interface BookRepository {
     List<Book> findAll();
     Optional<Book> findById(String id);
     Book save(Book book);
+    void saveAll(List<Book> books);
+    boolean existsById(String id);
 }

@@ -1,6 +1,7 @@
 package com.adventure.book.service.book;
 
 import com.adventure.book.domain.book.*;
+import com.adventure.book.exception.book.BookAlreadyExistsException;
 import com.adventure.book.exception.book.BookNotFoundException;
 import com.adventure.book.exception.book.OptionNotFoundException;
 import com.adventure.book.exception.book.SectionNotFoundException;
@@ -140,5 +141,26 @@ public class BookServiceImpl implements BookService {
         }
 
         return section.getOptions().get(index);
+    }
+
+    @Override
+    public Book createBook(Book book) {
+        if (bookRepository.existsById(book.getId())) {
+            throw new BookAlreadyExistsException(book.getId());
+        }
+
+        Set<String> normalizedCategories = book.getCategories() == null
+                ? new LinkedHashSet<>()
+                : book.getCategories().stream()
+                .filter(java.util.Objects::nonNull)
+                .map(String::trim)
+                .filter(value -> !value.isBlank())
+                .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+
+        book.setCategories(normalizedCategories);
+
+        bookValidationService.validate(book);
+
+        return bookRepository.save(book);
     }
 }

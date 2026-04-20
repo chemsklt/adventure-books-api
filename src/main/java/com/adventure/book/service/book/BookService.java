@@ -21,4 +21,6 @@ public interface BookService {
     Section getSection(String bookId, String sectionId);
 
     Section chooseOption(String bookId, String sectionId, String optionId);
+
+    Book createBook(Book book);
 }

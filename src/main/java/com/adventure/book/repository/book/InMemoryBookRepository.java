@@ -3,10 +3,7 @@ package com.adventure.book.repository.book;
 import com.adventure.book.domain.book.Book;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
@@ -30,7 +27,14 @@ public class InMemoryBookRepository implements BookRepository {
         return book;
     }
 
+    @Override
     public void saveAll(List<Book> initialBooks) {
         initialBooks.forEach(book -> books.put(book.getId(), book));
     }
+
+    @Override
+    public boolean existsById(String id) {
+        return books.containsKey(id);
+    }
+
 }
