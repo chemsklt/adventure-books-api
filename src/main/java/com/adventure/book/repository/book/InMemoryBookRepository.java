@@ -1,6 +1,6 @@
-package com.adventure.book.repository;
+package com.adventure.book.repository.book;
 
-import com.adventure.book.domain.Book;
+import com.adventure.book.domain.book.Book;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

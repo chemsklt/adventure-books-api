@@ -6,7 +6,7 @@ import com.adventure.book.domain.game.GameMoveResult;
 import com.adventure.book.domain.game.GameStatus;
 import com.adventure.book.generated.model.ConsequenceResponse;
 import com.adventure.book.generated.model.GameResponse;
-import com.adventure.book.mapper.BookReadingMapper;
+import com.adventure.book.mapper.book.BookReadingMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

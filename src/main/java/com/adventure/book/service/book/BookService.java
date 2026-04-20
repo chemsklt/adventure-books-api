@@ -1,8 +1,8 @@
-package com.adventure.book.service;
+package com.adventure.book.service.book;
 
-import com.adventure.book.domain.Book;
-import com.adventure.book.domain.Difficulty;
-import com.adventure.book.domain.Section;
+import com.adventure.book.domain.book.Book;
+import com.adventure.book.domain.book.Difficulty;
+import com.adventure.book.domain.book.Section;
 
 import java.util.List;
 

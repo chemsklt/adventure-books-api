@@ -1,7 +1,7 @@
 package com.adventure.book.domain.game;
 
 import com.adventure.book.domain.Consequence;
-import com.adventure.book.domain.Section;
+import com.adventure.book.domain.book.Section;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

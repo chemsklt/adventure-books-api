@@ -1,10 +1,10 @@
-package com.adventure.book.service;
+package com.adventure.book.service.book;
 
-import com.adventure.book.domain.*;
-import com.adventure.book.exception.BookNotFoundException;
-import com.adventure.book.exception.OptionNotFoundException;
-import com.adventure.book.exception.SectionNotFoundException;
-import com.adventure.book.repository.BookRepository;
+import com.adventure.book.domain.book.*;
+import com.adventure.book.exception.book.BookNotFoundException;
+import com.adventure.book.exception.book.OptionNotFoundException;
+import com.adventure.book.exception.book.SectionNotFoundException;
+import com.adventure.book.repository.book.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

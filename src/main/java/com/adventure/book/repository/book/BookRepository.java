@@ -1,6 +1,6 @@
-package com.adventure.book.repository;
+package com.adventure.book.repository.book;
 
-import com.adventure.book.domain.Book;
+import com.adventure.book.domain.book.Book;
 
 import java.util.List;
 import java.util.Optional;

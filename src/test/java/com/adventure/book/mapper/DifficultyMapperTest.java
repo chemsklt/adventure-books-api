@@ -1,5 +1,7 @@
 package com.adventure.book.mapper;
 
+import com.adventure.book.domain.book.Difficulty;
+import com.adventure.book.mapper.book.DifficultyMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -17,12 +19,12 @@ class DifficultyMapperTest {
     @Test
     void shouldMapGeneratedDifficultyToDomainDifficulty() {
         assertThat(mapper.toDomain(com.adventure.book.generated.model.Difficulty.EASY))
-                .isEqualTo(com.adventure.book.domain.Difficulty.EASY);
+                .isEqualTo(Difficulty.EASY);
 
         assertThat(mapper.toDomain(com.adventure.book.generated.model.Difficulty.MEDIUM))
-                .isEqualTo(com.adventure.book.domain.Difficulty.MEDIUM);
+                .isEqualTo(Difficulty.MEDIUM);
 
         assertThat(mapper.toDomain(com.adventure.book.generated.model.Difficulty.HARD))
-                .isEqualTo(com.adventure.book.domain.Difficulty.HARD);
+                .isEqualTo(Difficulty.HARD);
     }
 }

@@ -1,9 +1,10 @@
 package com.adventure.book.mapper;
 
-import com.adventure.book.domain.Option;
-import com.adventure.book.domain.Section;
-import com.adventure.book.domain.SectionType;
+import com.adventure.book.domain.book.Option;
+import com.adventure.book.domain.book.Section;
+import com.adventure.book.domain.book.SectionType;
 import com.adventure.book.generated.model.SectionResponse;
+import com.adventure.book.mapper.book.BookReadingMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

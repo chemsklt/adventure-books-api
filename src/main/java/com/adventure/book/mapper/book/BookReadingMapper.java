@@ -1,7 +1,8 @@
-package com.adventure.book.mapper;
+package com.adventure.book.mapper.book;
 
-import com.adventure.book.domain.Option;
-import com.adventure.book.domain.Section;
+import com.adventure.book.domain.book.Option;
+import com.adventure.book.domain.book.Section;
+import com.adventure.book.domain.book.SectionType;
 import com.adventure.book.generated.model.OptionResponse;
 import com.adventure.book.generated.model.SectionResponse;
 import org.mapstruct.Mapper;
@@ -18,7 +19,7 @@ public interface BookReadingMapper {
     @Mapping(target = "options", expression = "java(mapOptions(section.getOptions()))")
     SectionResponse toSectionResponse(Section section);
 
-    default SectionResponse.TypeEnum map(com.adventure.book.domain.SectionType type) {
+    default SectionResponse.TypeEnum map(SectionType type) {
         return type == null ? null : SectionResponse.TypeEnum.valueOf(type.name());
     }
 

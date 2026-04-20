@@ -1,18 +1,17 @@
 package com.adventure.book.controller;
 
-import com.adventure.book.domain.Book;
-import com.adventure.book.domain.Difficulty;
-import com.adventure.book.exception.BookNotFoundException;
+import com.adventure.book.controller.book.BookController;
+import com.adventure.book.domain.book.Book;
+import com.adventure.book.domain.book.Difficulty;
+import com.adventure.book.exception.book.BookNotFoundException;
 import com.adventure.book.generated.model.BookDetailsResponse;
 import com.adventure.book.generated.model.BookSummaryResponse;
-import com.adventure.book.mapper.BookMapper;
-import com.adventure.book.mapper.DifficultyMapper;
-import com.adventure.book.service.BookService;
+import com.adventure.book.mapper.book.BookMapper;
+import com.adventure.book.mapper.book.DifficultyMapper;
+import com.adventure.book.service.book.BookService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;

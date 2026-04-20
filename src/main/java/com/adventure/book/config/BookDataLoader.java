@@ -1,7 +1,7 @@
 package com.adventure.book.config;
 
-import com.adventure.book.domain.Book;
-import com.adventure.book.repository.InMemoryBookRepository;
+import com.adventure.book.domain.book.Book;
+import com.adventure.book.repository.book.InMemoryBookRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

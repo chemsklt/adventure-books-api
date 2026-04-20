@@ -1,4 +1,4 @@
-package com.adventure.book.exception;
+package com.adventure.book.exception.book;
 
 public class BookNotFoundException extends RuntimeException{
     public BookNotFoundException(String bookId) {

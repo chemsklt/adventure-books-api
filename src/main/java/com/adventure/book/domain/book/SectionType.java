@@ -1,4 +1,4 @@
-package com.adventure.book.domain;
+package com.adventure.book.domain.book;
 
 public enum SectionType {
     BEGIN,

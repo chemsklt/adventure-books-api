@@ -1,5 +1,6 @@
-package com.adventure.book.domain;
+package com.adventure.book.domain.book;
 
+import com.adventure.book.domain.Consequence;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -4,13 +4,13 @@ import com.adventure.book.domain.Consequence;
 import com.adventure.book.domain.game.GameMoveResult;
 import com.adventure.book.domain.game.GameSession;
 import com.adventure.book.domain.game.GameStatus;
-import com.adventure.book.domain.Option;
-import com.adventure.book.domain.Section;
-import com.adventure.book.domain.SectionType;
+import com.adventure.book.domain.book.Option;
+import com.adventure.book.domain.book.Section;
+import com.adventure.book.domain.book.SectionType;
 import com.adventure.book.exception.game.GameNotFoundException;
-import com.adventure.book.exception.OptionNotFoundException;
+import com.adventure.book.exception.book.OptionNotFoundException;
 import com.adventure.book.repository.game.GameSessionRepository;
-import com.adventure.book.service.BookService;
+import com.adventure.book.service.book.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

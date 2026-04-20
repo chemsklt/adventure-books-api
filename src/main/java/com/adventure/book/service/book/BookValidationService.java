@@ -1,10 +1,10 @@
-package com.adventure.book.service;
+package com.adventure.book.service.book;
 
-import com.adventure.book.domain.Book;
-import com.adventure.book.domain.Option;
-import com.adventure.book.domain.Section;
-import com.adventure.book.domain.SectionType;
-import com.adventure.book.exception.InvalidBookException;
+import com.adventure.book.domain.book.Book;
+import com.adventure.book.domain.book.Option;
+import com.adventure.book.domain.book.Section;
+import com.adventure.book.domain.book.SectionType;
+import com.adventure.book.exception.book.InvalidBookException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayDeque;

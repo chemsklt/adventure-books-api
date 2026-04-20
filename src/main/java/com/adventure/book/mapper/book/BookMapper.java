@@ -1,6 +1,6 @@
-package com.adventure.book.mapper;
+package com.adventure.book.mapper.book;
 
-import com.adventure.book.domain.Book;
+import com.adventure.book.domain.book.Book;
 import com.adventure.book.generated.model.BookDetailsResponse;
 import com.adventure.book.generated.model.BookSummaryResponse;
 import org.mapstruct.Mapper;

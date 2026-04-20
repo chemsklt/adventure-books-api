@@ -1,16 +1,17 @@
 package com.adventure.book.controller;
 
-import com.adventure.book.domain.Option;
-import com.adventure.book.domain.Section;
-import com.adventure.book.domain.SectionType;
-import com.adventure.book.exception.BookNotFoundException;
+import com.adventure.book.controller.book.BookReadingController;
+import com.adventure.book.domain.book.Option;
+import com.adventure.book.domain.book.Section;
+import com.adventure.book.domain.book.SectionType;
+import com.adventure.book.exception.book.BookNotFoundException;
 import com.adventure.book.exception.GlobalExceptionHandler;
-import com.adventure.book.exception.OptionNotFoundException;
-import com.adventure.book.exception.SectionNotFoundException;
+import com.adventure.book.exception.book.OptionNotFoundException;
+import com.adventure.book.exception.book.SectionNotFoundException;
 import com.adventure.book.generated.model.OptionResponse;
 import com.adventure.book.generated.model.SectionResponse;
-import com.adventure.book.mapper.BookReadingMapper;
-import com.adventure.book.service.BookService;
+import com.adventure.book.mapper.book.BookReadingMapper;
+import com.adventure.book.service.book.BookService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

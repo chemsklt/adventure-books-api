@@ -1,11 +1,11 @@
-package com.adventure.book.controller;
+package com.adventure.book.controller.book;
 
-import com.adventure.book.domain.Book;
+import com.adventure.book.domain.book.Book;
 import com.adventure.book.generated.api.BooksApi;
 import com.adventure.book.generated.model.*;
-import com.adventure.book.mapper.BookMapper;
-import com.adventure.book.mapper.DifficultyMapper;
-import com.adventure.book.service.BookService;
+import com.adventure.book.mapper.book.BookMapper;
+import com.adventure.book.mapper.book.DifficultyMapper;
+import com.adventure.book.service.book.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

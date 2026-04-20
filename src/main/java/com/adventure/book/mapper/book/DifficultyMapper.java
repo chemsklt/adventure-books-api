@@ -1,11 +1,12 @@
-package com.adventure.book.mapper;
+package com.adventure.book.mapper.book;
 
+import com.adventure.book.domain.book.Difficulty;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface DifficultyMapper {
 
-    com.adventure.book.domain.Difficulty toDomain(
+    Difficulty toDomain(
             com.adventure.book.generated.model.Difficulty difficulty
     );
 }

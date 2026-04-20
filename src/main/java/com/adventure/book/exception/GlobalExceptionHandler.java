@@ -1,5 +1,9 @@
 package com.adventure.book.exception;
 
+import com.adventure.book.exception.book.BookNotFoundException;
+import com.adventure.book.exception.book.InvalidBookException;
+import com.adventure.book.exception.book.OptionNotFoundException;
+import com.adventure.book.exception.book.SectionNotFoundException;
 import com.adventure.book.exception.game.GameNotFoundException;
 import com.adventure.book.generated.model.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;

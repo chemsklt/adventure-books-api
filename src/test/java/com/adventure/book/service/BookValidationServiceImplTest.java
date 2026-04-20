@@ -1,11 +1,12 @@
 package com.adventure.book.service;
 
-import com.adventure.book.domain.Book;
-import com.adventure.book.domain.Difficulty;
-import com.adventure.book.domain.Option;
-import com.adventure.book.domain.Section;
-import com.adventure.book.domain.SectionType;
-import com.adventure.book.exception.InvalidBookException;
+import com.adventure.book.domain.book.Book;
+import com.adventure.book.domain.book.Difficulty;
+import com.adventure.book.domain.book.Option;
+import com.adventure.book.domain.book.Section;
+import com.adventure.book.domain.book.SectionType;
+import com.adventure.book.exception.book.InvalidBookException;
+import com.adventure.book.service.book.BookValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
